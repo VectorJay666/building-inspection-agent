@@ -1,0 +1,22 @@
+[
+  {
+    "reading_id": "g03-n-crack",
+    "sensor_or_point": "N-wall",
+    "metric": "crack_mm",
+    "value": 5.1,
+    "unit": "mm",
+    "timestamp": "2026-09-11T08:10:00Z",
+    "location_tag": "N-wall",
+    "building_id": "demo-building-01"
+  },
+  {
+    "reading_id": "g03-e-tilt",
+    "sensor_or_point": "E-corner",
+    "metric": "tilt_deg",
+    "value": 0.9,
+    "unit": "deg",
+    "timestamp": "2026-09-11T08:10:00Z",
+    "location_tag": "E-corner",
+    "building_id": "demo-building-01"
+  }
+]

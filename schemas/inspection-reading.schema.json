@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://building-inspection-agent.local/schemas/inspection-reading.schema.json",
+  "title": "InspectionReading",
+  "description": "A single building-inspection sensor or point reading. ingest_readings MUST validate every batch item against this schema. Illegal items are rejected; they MUST NOT be repaired or invented.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reading_id",
+    "sensor_or_point",
+    "metric",
+    "value",
+    "unit",
+    "timestamp",
+    "location_tag"
+  ],
+  "properties": {
+    "reading_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable unique id for this reading within a batch or stream."
+    },
+    "sensor_or_point": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Sensor id or inspection point id (e.g. A, wall-N-03)."
+    },
+    "metric": {
+      "type": "string",
+      "enum": ["crack_mm", "tilt_deg"],
+      "description": "Known metrics only. Unknown metrics are illegal for this schema and MUST be rejected by ingest, or (if they slip through) MUST NOT receive an invented threshold in flag_anomalies."
+    },
+    "value": {
+      "type": "number",
+      "description": "Numeric measurement. Missing or non-numeric value → rejected."
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unit matching the metric (mm for crack_mm, deg for tilt_deg)."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of the reading."
+    },
+    "location_tag": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-facing location label used on the map and evidence drawer."
+    },
+    "building_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional building identifier. Hardware later reuses the same field."
+    }
+  }
+}
