@@ -631,7 +631,7 @@ function renderDrawer(item) {
   drawer.dataset.open = "true";
   const blocked = item.status === "blocked";
   summary.textContent = blocked
-    ? `BLOCKED — no conclusion. Missing: ${(item.missing || []).join(", ") || "required evidence fields"}`
+    ? `BLOCKED — no conclusion. Missing: ${(item.missing_fields || item.missing || []).join(", ") || "required evidence fields"}`
     : `Evidence chain for ${item.location_tag} (${item.reading_id})`;
   const fields = [
     "reading_id",
