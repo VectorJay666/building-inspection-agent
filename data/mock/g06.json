@@ -1,0 +1,12 @@
+[
+  {
+    "reading_id": "g06-x-crack",
+    "sensor_or_point": "X",
+    "metric": "crack_mm",
+    "value": 4.5,
+    "unit": "mm",
+    "timestamp": "2026-09-11T08:20:00Z",
+    "location_tag": "X",
+    "building_id": "demo-building-01"
+  }
+]
