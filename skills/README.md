@@ -53,7 +53,7 @@ if ingest["accepted"]:
     attach = attach_evidence(rank["ranked"])    # {attached, blocked}
 ```
 
-Goldens (G01–G03 plus G04 empty, G05 missing `value`, G06 attach BLOCK, G07 unknown metric, G08 identity):
+Goldens (G01–G08 fixtures in `data/mock/`):
 
 ```bash
 python3 -m skills.runtime.goldens

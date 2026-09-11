@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run layer ② golden checks (G01–G03 plus G04–G08 shapes).
+"""Run layer ② golden checks (G01–G08 fixtures under data/mock/).
 
 Usage (from repo root):
 

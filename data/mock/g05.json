@@ -1,0 +1,21 @@
+[
+  {
+    "reading_id": "g05-missing-value",
+    "sensor_or_point": "BAD",
+    "metric": "crack_mm",
+    "unit": "mm",
+    "timestamp": "2026-09-11T08:15:00Z",
+    "location_tag": "BAD",
+    "building_id": "demo-building-01"
+  },
+  {
+    "reading_id": "g05-ok",
+    "sensor_or_point": "OK",
+    "metric": "tilt_deg",
+    "value": 0.8,
+    "unit": "deg",
+    "timestamp": "2026-09-11T08:15:00Z",
+    "location_tag": "OK",
+    "building_id": "demo-building-01"
+  }
+]

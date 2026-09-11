@@ -1,0 +1,12 @@
+[
+  {
+    "reading_id": "g07-temperature",
+    "sensor_or_point": "T1",
+    "metric": "temperature",
+    "value": 25.0,
+    "unit": "C",
+    "timestamp": "2026-09-11T08:25:00Z",
+    "location_tag": "T1",
+    "building_id": "demo-building-01"
+  }
+]

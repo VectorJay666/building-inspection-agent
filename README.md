@@ -38,6 +38,7 @@ python3 demo/run_mock_loop.py data/mock/g01.json
 python3 demo/run_mock_loop.py data/mock/g02.json
 python3 demo/run_mock_loop.py data/mock/g03.json
 python3 -m skills.runtime.goldens
+python3 tests/run_goldens.py
 ```
 
 脚本调用真实 pipeline（ingest → flag → rank → attach）并打印 accepted/rejected、alerts、ranked+recheck、attached/blocked。空数组或非法 JSON 停在 ingest，不编造读数。
@@ -85,7 +86,7 @@ schemas/
   inspection-reading.schema.json
   evidence-chain-item.schema.json
 data/mock/
-  g01.json g02.json g03.json   # 预期见该目录 README
+  g01.json … g08.json          # 预期见该目录 README；G04–G08 金样 fixture
 tests/
   GOLDEN_CASES.md      # G01–G08
   run_goldens.py       # python3 tests/run_goldens.py
@@ -111,8 +112,8 @@ demo/
 
 ## 路线图
 
-- **v0（当前）**：Schema、Skill 契约、g01–g03、金样清单、storyboard、**executable layer ② runtime**。
-- **v0.1**：Test 把 G04–G08 正式 fixture 跑绿；Demo UI。
+- **v0（当前）**：Schema、Skill 契约、g01–g08 金样 fixture、storyboard、**executable layer ② runtime**。
+- **v0.1**：Demo UI。
 - **Demo UI**：四栏布局，不接入 ①。
 - **硬件后期**：裂缝仪 / 倾角 / 影像量测 / 无人机 写入同一 `InspectionReading`（`metric` + `value` + `unit` + `location_tag` + 可选 `building_id`），不另起数据模型。
 - **① / ③**：证据链稳定后再做决策辅助与导出。
