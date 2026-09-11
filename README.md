@@ -51,6 +51,10 @@ python3 -m skills.runtime.goldens
 
 不要在 mock 环里启动 ① 或 ③。
 
+## Demo UI
+
+四栏静态页（无需构建）：打开 `demo/index.html`，或在仓库根目录执行 `python3 -m http.server 8080` 后访问 http://localhost:8080/demo/ 。默认 G01；先导入再点 **Run ②**。步骤对照见 `demo/README.md` 与 `demo/STORYBOARD.md`。
+
 ## 证据契约
 
 Schema：`schemas/evidence-chain-item.schema.json`。
@@ -91,6 +95,8 @@ tests/
   run_goldens.py       # python3 tests/run_goldens.py
 demo/
   STORYBOARD.md        # 60–90s：导入→异常→优先级→证据抽屉→tease ①
+  index.html           # 四栏最小 UI（左导入 / 中标记 / 右列表 / 底抽屉）
+  README.md            # 如何打开 UI，并对照 storyboard
   run_mock_loop.py     # layer ② pipeline CLI
 ```
 
@@ -112,7 +118,7 @@ demo/
 ## 路线图
 
 - **v0（当前）**：Schema、Skill 契约、g01–g03、金样清单、storyboard、**executable layer ② runtime**。
-- **v0.1**：Test 把 G04–G08 正式 fixture 跑绿；Demo UI。
-- **Demo UI**：四栏布局，不接入 ①。
+- **v0.1**：Test 把 G04–G08 正式 fixture 跑绿。
+- **Demo UI**：`demo/index.html` 四栏布局，不接入 ①。
 - **硬件后期**：裂缝仪 / 倾角 / 影像量测 / 无人机 写入同一 `InspectionReading`（`metric` + `value` + `unit` + `location_tag` + 可选 `building_id`），不另起数据模型。
 - **① / ③**：证据链稳定后再做决策辅助与导出。
