@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Layer ② demo — building-inspection-agent</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="header-brand">
+          <span class="layer-chip">② 引擎</span>
+          <h1>房屋安全检测 · 闭环演示</h1>
+          <p class="header-sub">
+            inspection → anomalies → priorities → evidence · mock G01–G03
+          </p>
+        </div>
+        <div class="header-actions">
+          <button
+            type="button"
+            id="tease-decision"
+            class="btn-disabled-layer"
+            aria-describedby="disclaimer"
+          >
+            ① 决策层（签字辅助）— v0 未启用
+          </button>
+        </div>
+      </header>
+
+      <aside class="panel panel-left" aria-label="Data source / import">
+        <h2>Left · 导入</h2>
+        <p class="panel-hint">Load a JSON batch, then run ②. Center stays quiet until flag.</p>
+
+        <div class="source-grid" role="group" aria-label="Mock batches">
+          <button type="button" class="source-btn active" data-source="g01">G01</button>
+          <button type="button" class="source-btn" data-source="g02">G02</button>
+          <button type="button" class="source-btn" data-source="g03">G03</button>
+          <button type="button" class="source-btn" data-source="empty">Empty []</button>
+          <button type="button" class="source-btn" data-source="g06">G06 BLOCK</button>
+        </div>
+
+        <label class="file-label">
+          Custom JSON
+          <input id="file-input" type="file" accept="application/json,.json" />
+        </label>
+
+        <button type="button" id="run-engine" class="btn-run">
+          Run ② ingest → flag → rank → attach
+        </button>
+
+        <h3>Readings</h3>
+        <ul id="reading-list" class="reading-list"></ul>
+
+        <h3>Pipeline log</h3>
+        <ol id="pipeline-log" class="pipeline-log"></ol>
+      </aside>
+
+      <main class="panel panel-center" aria-label="Location annotations">
+        <h2>Center · 部位标注</h2>
+        <p class="panel-hint">
+          Only over-threshold points light up.
+          <span class="legend">
+            <span class="legend-item"><i class="swatch alert"></i> alert</span>
+            <span class="legend-item"><i class="swatch quiet"></i> imported, quiet</span>
+          </span>
+        </p>
+        <div class="plan-wrap">
+          <svg class="plan-bg" viewBox="0 0 400 280" aria-hidden="true">
+            <rect x="36" y="36" width="328" height="208" class="wall" />
+            <rect x="48" y="48" width="304" height="184" class="floor" />
+            <line x1="200" y1="48" x2="200" y2="232" class="grid" />
+            <line x1="48" y1="140" x2="352" y2="140" class="grid" />
+            <text x="200" y="28" text-anchor="middle" class="compass">N</text>
+            <text x="372" y="144" class="compass">E</text>
+          </svg>
+          <div id="plan-pins" class="plan-pins"></div>
+          <p id="plan-status" class="plan-status">Import a batch. Plan is quiet until ② runs.</p>
+        </div>
+      </main>
+
+      <aside class="panel panel-right" aria-label="Anomalies, priorities, recheck">
+        <h2>Right · 优先级</h2>
+        <p class="panel-hint">Ranked repair list + recheck tasks. Click a row for evidence.</p>
+        <p id="rank-meta" class="rank-meta">No ranked alerts.</p>
+        <ol id="ranked-list" class="ranked-list"></ol>
+        <h3>Dropped / BLOCKED</h3>
+        <ul id="blocked-list" class="blocked-list"></ul>
+      </aside>
+
+      <section
+        id="drawer"
+        class="drawer"
+        aria-label="Evidence chain"
+        data-open="false"
+      >
+        <div class="drawer-bar">
+          <h2>Bottom · 证据链</h2>
+          <p id="drawer-summary" class="drawer-summary">
+            Click a priority, anomaly, or alert pin. Incomplete chain → BLOCKED, no conclusion.
+          </p>
+          <button type="button" id="drawer-close" class="btn-ghost">Close</button>
+        </div>
+        <div id="drawer-body" class="drawer-body">
+          <p class="muted">No evidence selected.</p>
+        </div>
+      </section>
+    </div>
+
+    <p id="disclaimer" class="disclaimer">
+      辅助决策，不替代签字工程师。Layer ② alerts are not a signed structural conclusion. Do not run ① or ③ in v0.
+    </p>
+
+    <div id="tease-overlay" class="overlay" hidden>
+      <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="tease-title">
+        <p class="overlay-kicker">tease only</p>
+        <h2 id="tease-title">① 决策层（签字辅助）— v0 未启用</h2>
+        <p>
+          本系统用于<strong>辅助决策，不替代签字工程师</strong>。v0 locks engine ② only.
+          Decision / sign-off is not executed from this demo.
+        </p>
+        <button type="button" id="tease-dismiss" class="btn-run">Fade out</button>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
