@@ -1,0 +1,12 @@
+[
+  {
+    "reading_id": "g02-p1-tilt",
+    "sensor_or_point": "P1",
+    "metric": "tilt_deg",
+    "value": 0.8,
+    "unit": "deg",
+    "timestamp": "2026-09-11T08:05:00Z",
+    "location_tag": "P1",
+    "building_id": "demo-building-01"
+  }
+]

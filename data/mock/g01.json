@@ -1,0 +1,32 @@
+[
+  {
+    "reading_id": "g01-a-crack",
+    "sensor_or_point": "A",
+    "metric": "crack_mm",
+    "value": 4.2,
+    "unit": "mm",
+    "timestamp": "2026-09-11T08:00:00Z",
+    "location_tag": "A",
+    "building_id": "demo-building-01"
+  },
+  {
+    "reading_id": "g01-b-tilt",
+    "sensor_or_point": "B",
+    "metric": "tilt_deg",
+    "value": 0.2,
+    "unit": "deg",
+    "timestamp": "2026-09-11T08:00:00Z",
+    "location_tag": "B",
+    "building_id": "demo-building-01"
+  },
+  {
+    "reading_id": "g01-c-crack",
+    "sensor_or_point": "C",
+    "metric": "crack_mm",
+    "value": 1.0,
+    "unit": "mm",
+    "timestamp": "2026-09-11T08:00:00Z",
+    "location_tag": "C",
+    "building_id": "demo-building-01"
+  }
+]
