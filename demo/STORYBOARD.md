@@ -39,4 +39,4 @@ Layer ② only. **Tease** decision layer ① in the last beat — **do not run i
 
 ## Demo engineer notes
 
-Implementation of the four-pane UI is **TODO**. This storyboard is the contract. Use mock JSON as the only data source for v0 recordings.
+Four-pane UI: open `demo/index.html` (see `demo/README.md`). This storyboard is the recording contract. Default path is mock G01–G03; do not invent extra thresholds for the take.
