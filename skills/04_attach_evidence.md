@@ -4,7 +4,27 @@ Pipeline order: **4 / 4**
 
 Build the **full evidence chain** for ranked alerts. Missing **any** required evidence field → **BLOCK**. No hallucination: conclusions only from value, threshold, and `rule_id`.
 
-> Implementation: **TODO** — Skills engineer fills the runtime later. This file is the stub contract.
+## Runtime
+
+Python: `from skills.runtime import attach_evidence`
+
+```python
+from skills.runtime import attach_evidence
+
+out = attach_evidence(ranked_items)
+# out["attached"] — EvidenceChainItem[] (schema-valid)
+# out["blocked"]  — explicit BLOCK records listing missing/invalid fields
+```
+
+`conclusion` is written only as `{metric} {value} > {threshold} ({rule_id})`.  
+`confidence` is `1.0` when the rule matched deterministically. Same input → identical text (G08).
+
+Implementation: `skills/runtime/attach.py`. Schema: `schemas/evidence-chain-item.schema.json`.
+
+CLI: `python3 demo/run_mock_loop.py data/mock/g01.json`  
+Goldens: `python3 -m skills.runtime.goldens` (G06 calls this skill directly with a faulty alert missing `threshold` / `rule_id`).
+
+This skill **must not** invoke layer ① decision or ③ export.
 
 ## Trigger
 
@@ -19,6 +39,8 @@ See `schemas/evidence-chain-item.schema.json`:
 `reading_id`, `sensor_or_point`, `metric`, `value`, `threshold`, `rule_id`, `timestamp`, `location_tag`, `conclusion`, `confidence`
 
 **If any required field is missing → BLOCK.** Do not invent conclusions. Do not attach a partial chain.
+
+On input, `conclusion` and `confidence` are produced by this skill from `value`, `threshold`, and `rule_id`. The other listed fields must already be present and typed correctly.
 
 ## Steps
 

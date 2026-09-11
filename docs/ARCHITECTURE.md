@@ -34,7 +34,7 @@ Numbering is product-layer ids, not pipeline order: **② engine → ① decisio
 | `rank_priorities` | Stable severity sort + recheck tasks; drop items missing evidence fields |
 | `attach_evidence` | Full chain or **BLOCK**; no hallucination |
 
-Schemas: `schemas/`. Stubs: `skills/`. Mocks: `data/mock/`. Goldens: `tests/GOLDEN_CASES.md`.
+Schemas: `schemas/`. Skills: `skills/` (contracts) + `skills/runtime/` (executable). Mocks: `data/mock/`. Goldens: `tests/GOLDEN_CASES.md`.
 
 ## ① Decision (out of v0)
 
