@@ -4,7 +4,24 @@ Pipeline order: **2 / 4**
 
 Compare accepted readings to **default rules**. Emit **only** over-threshold items, each tagged with location. Never invent thresholds for unknown metrics.
 
-> Implementation: **TODO** — Skills engineer fills the runtime later. This file is the stub contract.
+## Runtime
+
+Python: `from skills.runtime import flag_anomalies`
+
+```python
+from skills.runtime import flag_anomalies
+
+flag = flag_anomalies(accepted_readings)
+# flag["alerts"] — over-threshold only (value > threshold)
+# flag["notices"] — UNKNOWN_METRIC / MISSING_VALUE (explicit, never silent)
+```
+
+Called automatically by `run_pipeline` after ingest when `accepted` is non-empty.
+
+Implementation: `skills/runtime/flag.py`. Rules table: `skills/runtime/rules.py` (the two locked metrics only).
+
+CLI: `python3 demo/run_mock_loop.py data/mock/g01.json` (only A alerts)  
+Goldens: `python3 -m skills.runtime.goldens`
 
 ## Trigger
 

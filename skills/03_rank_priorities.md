@@ -4,7 +4,24 @@ Pipeline order: **3 / 4**
 
 Severity-sort alerts and attach **recheck** tasks. Drop items missing evidence fields. Ranking MUST be **stable** (same input → same order).
 
-> Implementation: **TODO** — Skills engineer fills the runtime later. This file is the stub contract.
+## Runtime
+
+Python: `from skills.runtime import rank_priorities`
+
+```python
+from skills.runtime import rank_priorities
+
+rank = rank_priorities(alerts)
+# rank["ranked"] — rank 1..n, recheck_task like "recheck:P1:tilt_deg"
+# rank["dropped"] — incomplete alerts, listed (never silent)
+```
+
+Sort key: `value / threshold` descending, then `metric` (`crack_mm` before `tilt_deg`), then `location_tag`, then `reading_id`.
+
+Implementation: `skills/runtime/rank.py`.
+
+CLI: `python3 demo/run_mock_loop.py data/mock/g03.json` (E-corner then N-wall)  
+Goldens: `python3 -m skills.runtime.goldens`
 
 ## Trigger
 

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Placeholder mock loop for layer ②.
-
-Does NOT implement the Skills runtime. Prints the ingest → flag → rank → attach
-path and reminds operators of the evidence / SILENT_FAIL gates.
+"""Layer ② mock loop: ingest → flag → rank → attach on a JSON batch.
 
 Usage:
   python3 demo/run_mock_loop.py data/mock/g01.json
@@ -14,12 +11,130 @@ import json
 import sys
 from pathlib import Path
 
-SKILLS = [
-    ("ingest_readings", "skills/01_ingest_readings.md"),
-    ("flag_anomalies", "skills/02_flag_anomalies.md"),
-    ("rank_priorities", "skills/03_rank_priorities.md"),
-    ("attach_evidence", "skills/04_attach_evidence.md"),
-]
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from skills.runtime.pipeline import run_pipeline_from_path  # noqa: E402
+from skills.runtime.rules import format_number  # noqa: E402
+
+
+def _print_json(label: str, obj: object) -> None:
+    print(f"{label}:")
+    print(json.dumps(obj, indent=2, ensure_ascii=False))
+
+
+def _summarize_reading(item: dict) -> str:
+    loc = item.get("location_tag", "?")
+    metric = item.get("metric", "?")
+    value = item.get("value", "?")
+    rid = item.get("reading_id", "?")
+    return f"{rid} location={loc} {metric}={value}"
+
+
+def render(path: Path, result: dict) -> None:
+    print("building-inspection-agent · mock loop (layer ② runtime)")
+    print(f"batch: {path}")
+    print("pipeline: ingest_readings → flag_anomalies → rank_priorities → attach_evidence")
+    print("v0 locks ② engine only; do not run ① decision or ③ export")
+    print("evidence: missing any required field → attach_evidence BLOCK")
+    print("gate: 0 SILENT_FAIL")
+    print()
+
+    ingest = result["ingest"]
+    batch_error = ingest.get("batch_error")
+    if batch_error:
+        print(batch_error)
+        print("downstream skills NOT called (no invented readings)")
+        return
+
+    accepted = ingest["accepted"]
+    rejected = ingest["rejected"]
+    print(f"ingest accepted={len(accepted)} rejected={len(rejected)}")
+    if accepted:
+        for item in accepted:
+            print(f"  accepted  {_summarize_reading(item)}")
+    if rejected:
+        for rec in rejected:
+            rid = rec.get("reading_id", "(no reading_id)")
+            print(f"  rejected  index={rec.get('index')} {rid} [{rec.get('code')}] {rec.get('reason')}")
+    if not accepted and not rejected:
+        print("  (empty array)")
+
+    if not result["downstream_called"]:
+        reason = result.get("skip_reason") or "no accepted readings"
+        print()
+        print(
+            f"downstream skills NOT called ({reason}): "
+            "no invented alerts, ranks, recheck tasks, or evidence rows"
+        )
+        flag = result["flag"]
+        rank = result["rank"]
+        attach = result["attach"]
+        print(f"  alerts={len(flag['alerts'])} ranked={len(rank['ranked'])} "
+              f"attached={len(attach['attached'])} blocked={len(attach['blocked'])}")
+        return
+
+    flag = result["flag"]
+    alerts = flag["alerts"]
+    notices = flag["notices"]
+    print()
+    print(f"flag alerts={len(alerts)} notices={len(notices)}")
+    if not alerts:
+        print("  (no over-threshold alerts)")
+    for alert in alerts:
+        print(
+            "  ALERT  "
+            f"location={alert['location_tag']} "
+            f"{alert['metric']} {format_number(alert['value'])} > "
+            f"{format_number(alert['threshold'])} "
+            f"({alert['rule_id']}) reading_id={alert['reading_id']}"
+        )
+    for notice in notices:
+        rid = notice.get("reading_id", "")
+        print(f"  NOTICE [{notice.get('code')}] {rid} {notice.get('reason')}")
+
+    accepted_ids = {item.get("reading_id") for item in accepted}
+    alert_ids = {alert.get("reading_id") for alert in alerts}
+    quiet = [item for item in accepted if item.get("reading_id") not in alert_ids]
+    if quiet:
+        print("  not alerting (under-threshold or notice):")
+        for item in quiet:
+            print(f"    {_summarize_reading(item)}")
+
+    rank = result["rank"]
+    ranked = rank["ranked"]
+    dropped = rank["dropped"]
+    print()
+    print(f"rank ranked={len(ranked)} dropped={len(dropped)}")
+    for item in ranked:
+        print(
+            f"  #{item['rank']} location={item['location_tag']} "
+            f"{item['metric']} recheck={item['recheck_task']} "
+            f"reading_id={item['reading_id']}"
+        )
+    for rec in dropped:
+        print(f"  DROP [{rec.get('code')}] {rec.get('reason')}")
+
+    attach = result["attach"]
+    attached = attach["attached"]
+    blocked = attach["blocked"]
+    print()
+    print(f"attach attached={len(attached)} blocked={len(blocked)}")
+    for item in attached:
+        print(
+            f"  ATTACHED location={item['location_tag']} "
+            f"conclusion={item['conclusion']!r} confidence={item['confidence']}"
+        )
+    for rec in blocked:
+        print(f"  BLOCK {rec.get('reason')}")
+
+    if attached:
+        print()
+        _print_json("evidence chain", attached)
+    if blocked:
+        print()
+        _print_json("blocked", blocked)
 
 
 def main(argv: list[str]) -> int:
@@ -28,38 +143,12 @@ def main(argv: list[str]) -> int:
         return 2
 
     batch_path = Path(argv[1])
-    print("building-inspection-agent · mock loop (STUB, no runtime)")
-    print(f"batch: {batch_path}")
-    print("pipeline: ingest_readings → flag_anomalies → rank_priorities → attach_evidence")
-    print("v0 locks ② engine only; do not run ① decision or ③ export")
-    print("evidence: missing any required field → attach_evidence BLOCK")
-    print("gate: 0 SILENT_FAIL")
-    print()
+    result = run_pipeline_from_path(batch_path)
+    render(batch_path, result)
 
-    try:
-        raw = batch_path.read_text(encoding="utf-8")
-        data = json.loads(raw)
-    except FileNotFoundError:
-        print(f"FAIL: file not found: {batch_path}", file=sys.stderr)
+    ingest = result["ingest"]
+    if ingest.get("batch_error"):
         return 1
-    except json.JSONDecodeError as exc:
-        print(f"FAIL: illegal JSON, do not invent a batch: {exc}", file=sys.stderr)
-        return 1
-
-    if not isinstance(data, list):
-        print("FAIL: batch must be a JSON array; entire payload rejected", file=sys.stderr)
-        return 1
-
-    print(f"parsed array length: {len(data)} (validation is TODO in ingest_readings)")
-    if len(data) == 0:
-        print("empty batch: do not invent readings; do not call downstream")
-        return 0
-
-    for name, stub in SKILLS:
-        print(f"TODO invoke skill {name}  ({stub})")
-
-    print()
-    print("stop: Skills engineer implements the four stubs; Test wires G01–G08.")
     return 0
 
 

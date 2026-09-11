@@ -1,6 +1,6 @@
 # Golden cases G01–G08
 
-Harness: **TODO** (Test). These cases are the v0 acceptance list for layer ②.
+Harness (layer ② runtime): `python3 -m skills.runtime.goldens` or `python3 tests/run_goldens.py`. These cases are the v0 acceptance list for layer ②. Fixture JSON for G04–G08 still belongs to Test; the runtime goldens cover G01–G03 files plus inline G04–G08 shapes.
 
 **Gate: 0 SILENT_FAIL.** Every reject, drop, unknown-metric, and BLOCK must be explicit. Invented readings, thresholds, or conclusions = fail.
 

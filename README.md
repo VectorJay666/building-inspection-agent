@@ -1,6 +1,6 @@
 # building-inspection-agent
 
-智能无人房屋安全检测系统 — **v0 只锁定层 ②（引擎）**：把检测 JSON 变成可复核的证据链。Skills runtime 尚未实现，本仓库是结构、Schema、Skill 桩、Mock 与验收清单。
+智能无人房屋安全检测系统 — **v0 只锁定层 ②（引擎）**：把检测 JSON 变成可复核的证据链。Skills runtime 在 `skills/runtime/`，由 `demo/run_mock_loop.py` 编排。
 
 **辅助决策，不替代签字工程师。**
 
@@ -21,7 +21,7 @@ v0 先把契约钉死：**非法读数拒绝、只告超阈值、缺证据就 BL
 
 | 层 | 名称 | v0 |
 | --- | --- | --- |
-| **②** | 引擎（Skills）ingest → flag → rank → attach | **锁定**：本仓库唯一实现范围（当前为桩） |
+| **②** | 引擎（Skills）ingest → flag → rank → attach | **锁定**：本仓库唯一实现范围（`skills/runtime/`） |
 | **①** | 决策（签字辅助） | 不运行；Demo 只 tease |
 | **③** | 导出（报告 / 工单 / 归档） | 不运行；沿用同一套 Schema |
 
@@ -29,7 +29,7 @@ v0 先把契约钉死：**非法读数拒绝、只告超阈值、缺证据就 BL
 JSON 批次 ──► ② 引擎 ──► 证据链或 BLOCK ──► ① 决策（后）──► ③ 导出（后）
 ```
 
-## 如何跑 Mock 环（即使仍是 stub）
+## 如何跑 Mock 环
 
 环境：Python 3，无额外框架。
 
@@ -37,11 +37,12 @@ JSON 批次 ──► ② 引擎 ──► 证据链或 BLOCK ──► ① 决�
 python3 demo/run_mock_loop.py data/mock/g01.json
 python3 demo/run_mock_loop.py data/mock/g02.json
 python3 demo/run_mock_loop.py data/mock/g03.json
+python3 -m skills.runtime.goldens
 ```
 
-脚本会解析 JSON 数组并 **按顺序打印** 四个 Skill 桩路径，**不会**执行真实规则。空数组或非法 JSON 会失败或停在 ingest，不编造读数。
+脚本调用真实 pipeline（ingest → flag → rank → attach）并打印 accepted/rejected、alerts、ranked+recheck、attached/blocked。空数组或非法 JSON 停在 ingest，不编造读数。
 
-Skills 工程师落地 runtime 之后，同一入口仍应保持：
+同一入口保持：
 
 1. `ingest_readings` — 校验为 `InspectionReading[]`；非法拒绝；**全部拒绝则不调用下游**
 2. `flag_anomalies` — 默认规则见下；只输出超限 + 位置
@@ -78,10 +79,8 @@ docs/
   ARCHITECTURE.md      # ② → ① → ③；v0 只锁 ②
   NARRATIVE.md         # 一句话 + Crea 占位 + 免责声明
 skills/
-  01_ingest_readings.md
-  02_flag_anomalies.md
-  03_rank_priorities.md
-  04_attach_evidence.md
+  01_ingest_readings.md … 04_attach_evidence.md
+  runtime/                 # executable v0 skills + goldens
 schemas/
   inspection-reading.schema.json
   evidence-chain-item.schema.json
@@ -89,9 +88,10 @@ data/mock/
   g01.json g02.json g03.json   # 预期见该目录 README
 tests/
   GOLDEN_CASES.md      # G01–G08
+  run_goldens.py       # python3 tests/run_goldens.py
 demo/
   STORYBOARD.md        # 60–90s：导入→异常→优先级→证据抽屉→tease ①
-  run_mock_loop.py     # stub 编排
+  run_mock_loop.py     # layer ② pipeline CLI
 ```
 
 ## 团队角色
@@ -99,7 +99,7 @@ demo/
 | 角色 | 负责 |
 | --- | --- |
 | **Cons** | 痛点、阈值与「辅助不替代签字」边界 |
-| **Skills** | 四个 Skill 的 runtime（本仓库桩 → 可执行） |
+| **Skills** | 四个 Skill 的 runtime（`skills/runtime/`） |
 | **Test** | G01–G08 金样与 0 SILENT_FAIL 闸门 |
 | **Demo** | 左导入 / 中标记 / 右列表 / 底抽屉；按 storyboard 录 60–90s |
 | **Crea** | `docs/NARRATIVE.md` 口播与视觉；不改判定 |
@@ -111,8 +111,8 @@ demo/
 
 ## 路线图
 
-- **v0（当前）**：目录、Schema、Skill 桩、g01–g03、金样清单、storyboard、README。
-- **v0.1**：Skills runtime + Test 把 G01–G08 跑绿。
+- **v0（当前）**：Schema、Skill 契约、g01–g03、金样清单、storyboard、**executable layer ② runtime**。
+- **v0.1**：Test 把 G04–G08 正式 fixture 跑绿；Demo UI。
 - **Demo UI**：四栏布局，不接入 ①。
 - **硬件后期**：裂缝仪 / 倾角 / 影像量测 / 无人机 写入同一 `InspectionReading`（`metric` + `value` + `unit` + `location_tag` + 可选 `building_id`），不另起数据模型。
 - **① / ③**：证据链稳定后再做决策辅助与导出。

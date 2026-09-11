@@ -4,7 +4,25 @@ Pipeline order: **1 / 4**
 
 Validate a JSON batch into `InspectionReading[]`. Illegal items are rejected. If the entire batch is rejected (or the batch is empty after validation), **do not call downstream skills**.
 
-> Implementation: **TODO** — Skills engineer fills the runtime later. This file is the stub contract.
+## Runtime
+
+Python: `from skills.runtime import ingest_readings, run_pipeline, run_pipeline_from_path`
+
+```python
+from skills.runtime import ingest_readings, run_pipeline_from_path
+
+ingest = ingest_readings(payload)  # parsed JSON value
+# ingest["accepted"], ingest["rejected"], ingest["batch_error"]
+# Non-array or illegal JSON → batch_error; accepted remains [].
+# Empty accepted → run_pipeline does not call flag_anomalies.
+
+result = run_pipeline_from_path("data/mock/g01.json")
+```
+
+CLI: `python3 demo/run_mock_loop.py data/mock/g01.json`  
+Goldens: `python3 -m skills.runtime.goldens`
+
+Implementation: `skills/runtime/ingest.py` (JSON Schema subset against `schemas/inspection-reading.schema.json`). Missing schema file fails the skill.
 
 ## Trigger
 
@@ -29,9 +47,9 @@ Schema: `schemas/inspection-reading.schema.json`
 
 | Tool | Purpose |
 | --- | --- |
-| `read_json_batch` | Load file or stdin as text |
-| `validate_inspection_reading` | JSON Schema check per item |
-| `emit_rejection_log` | Structured reject reasons (never silent) |
+| `read_json_batch` | Load file or stdin as text (`run_pipeline_from_path` / `run_pipeline_from_text`) |
+| `validate_inspection_reading` | JSON Schema check per item (`skills.runtime.validate`) |
+| `emit_rejection_log` | Structured reject reasons (never silent) — `rejected[]` with `code` + `reason` |
 
 ## Failure / retry
 
